@@ -3,14 +3,14 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface ErrorStateProps {
+export interface ErrorStateProps {
   title?: string;
   message?: string;
   onRetry?: () => void;
   error?: Error | string;
 }
 
-const ErrorState: React.FC<ErrorStateProps> = ({
+export const ErrorState: React.FC<ErrorStateProps> = ({
   title = "Something went wrong",
   message = "We encountered an error while processing your request.",
   onRetry,

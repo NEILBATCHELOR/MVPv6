@@ -26,7 +26,7 @@ const WelcomeScreen = () => {
     { name: string; path: string }[]
   >([
     { name: "Projects", path: "/projects" },
-    { name: "Dashboard", path: "/dashboard" },
+    { name: "Token Builder", path: "/projects/${projectId}/tokens" },
     { name: "Investors", path: "/investors" },
     { name: "Cap Table", path: "/captable" },
     { name: "Activity Monitor", path: "/activity" },
