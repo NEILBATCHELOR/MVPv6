@@ -1,13 +1,10 @@
 import React from "react";
-import TokenMintingManager from "@/components/captable/TokenMintingManager";
+import { TokenTemplateBuilder } from "@/components/tokens/TokenTemplateBuilder";
 
-export default function TokenMintingEnhancedStoryboard() {
+export default function TokenTemplateBuilderStoryboard() {
   return (
-    <div className="w-full h-full bg-gray-50">
-      <TokenMintingManager 
-        projectId="test-project-1" 
-        projectName="ERC-20 Token Project" 
-      />
+    <div className="p-6 bg-white min-h-screen">
+      <TokenTemplateBuilder />
     </div>
   );
 }
