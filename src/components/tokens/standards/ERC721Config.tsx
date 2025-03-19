@@ -4,6 +4,14 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import {
+  Image,
+  Flame,
+  ArrowRightLeft,
+  FileText,
+  Banknote,
+  Layers,
+} from "lucide-react";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -82,7 +90,10 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
           className="border rounded-lg p-2"
         >
           <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <h4 className="text-base font-medium">NFT Collection Setup</h4>
+            <div className="flex items-center gap-2">
+              <Image className="h-5 w-5 text-indigo-500" />
+              <h4 className="text-base font-medium">NFT Collection Setup</h4>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -168,7 +179,10 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
           className="border rounded-lg p-2"
         >
           <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <h4 className="text-base font-medium">Minting & Burning</h4>
+            <div className="flex items-center gap-2">
+              <Flame className="h-5 w-5 text-orange-500" />
+              <h4 className="text-base font-medium">Minting & Burning</h4>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -257,7 +271,10 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
           className="border rounded-lg p-2"
         >
           <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <h4 className="text-base font-medium">Transfer & Approval</h4>
+            <div className="flex items-center gap-2">
+              <ArrowRightLeft className="h-5 w-5 text-blue-500" />
+              <h4 className="text-base font-medium">Transfer & Approval</h4>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -268,9 +285,9 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
                     <SelectValue placeholder="Select Token ID" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Token #1</SelectItem>
-                    <SelectItem value="2">Token #2</SelectItem>
-                    <SelectItem value="3">Token #3</SelectItem>
+                    <SelectItem value="token1">Token #1</SelectItem>
+                    <SelectItem value="token2">Token #2</SelectItem>
+                    <SelectItem value="token3">Token #3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -352,7 +369,10 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
           className="border rounded-lg p-2"
         >
           <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <h4 className="text-base font-medium">Metadata & Traits</h4>
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-emerald-500" />
+              <h4 className="text-base font-medium">Metadata & Traits</h4>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -363,9 +383,9 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
                     <SelectValue placeholder="Select Token ID" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Token #1</SelectItem>
-                    <SelectItem value="2">Token #2</SelectItem>
-                    <SelectItem value="3">Token #3</SelectItem>
+                    <SelectItem value="token1">Token #1</SelectItem>
+                    <SelectItem value="token2">Token #2</SelectItem>
+                    <SelectItem value="token3">Token #3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -434,9 +454,12 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
           className="border rounded-lg p-2"
         >
           <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <h4 className="text-base font-medium">
-              Royalties & Marketplace Integration
-            </h4>
+            <div className="flex items-center gap-2">
+              <Banknote className="h-5 w-5 text-amber-500" />
+              <h4 className="text-base font-medium">
+                Royalties & Marketplace Integration
+              </h4>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -577,7 +600,10 @@ const ERC721Config: React.FC<ERC721ConfigProps> = ({
         {/* Token Features Section (Preserved from original) */}
         <AccordionItem value="token-features" className="border rounded-lg p-2">
           <AccordionTrigger className="px-4 py-2 hover:no-underline">
-            <h4 className="text-base font-medium">Token Features</h4>
+            <div className="flex items-center gap-2">
+              <Layers className="h-5 w-5 text-purple-500" />
+              <h4 className="text-base font-medium">Token Features</h4>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

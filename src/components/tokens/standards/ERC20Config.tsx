@@ -4,7 +4,15 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Coins } from "lucide-react";
+import {
+  Coins,
+  ChevronDown,
+  ChevronUp,
+  Banknote,
+  ArrowRightLeft,
+  DollarSign,
+  ShieldCheck,
+} from "lucide-react";
 
 interface ERC20ConfigProps {
   tokenForm: any;
@@ -41,13 +49,18 @@ const ERC20Config: React.FC<ERC20ConfigProps> = ({
       {/* 1️⃣ Token Definition Panel */}
       <Card className="border border-gray-200">
         <CardHeader
-          className={`flex flex-row cursor-pointer pb-4 justify-left items-left`}
+          className={`flex flex-row cursor-pointer pb-4 justify-between items-center`}
           onClick={() => togglePanel("tokenDefinition")}
         >
-          <div className="flex items-left gap-2">
+          <div className="flex items-center gap-2">
             <Coins className="h-5 w-5 text-primary" />
             <CardTitle className="text-md">Token Definition</CardTitle>
           </div>
+          {panels.tokenDefinition ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
         </CardHeader>
 
         {panels.tokenDefinition && (
@@ -205,8 +218,14 @@ const ERC20Config: React.FC<ERC20ConfigProps> = ({
           onClick={() => togglePanel("supplyManagement")}
         >
           <div className="flex items-center gap-2">
+            <Banknote className="h-5 w-5 text-green-500" />
             <CardTitle className="text-md">Token Supply Management</CardTitle>
           </div>
+          {panels.supplyManagement ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
         </CardHeader>
 
         {panels.supplyManagement && (
@@ -306,8 +325,14 @@ const ERC20Config: React.FC<ERC20ConfigProps> = ({
           onClick={() => togglePanel("transferAllowance")}
         >
           <div className="flex items-center gap-2">
+            <ArrowRightLeft className="h-5 w-5 text-blue-500" />
             <CardTitle className="text-md">Transfer & Allowance</CardTitle>
           </div>
+          {panels.transferAllowance ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
         </CardHeader>
 
         {panels.transferAllowance && (
@@ -440,10 +465,16 @@ const ERC20Config: React.FC<ERC20ConfigProps> = ({
           onClick={() => togglePanel("pricing")}
         >
           <div className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-amber-500" />
             <CardTitle className="text-md">
               Pricing & Oracle Integration
             </CardTitle>
           </div>
+          {panels.pricing ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
         </CardHeader>
 
         {panels.pricing && (
@@ -590,10 +621,16 @@ const ERC20Config: React.FC<ERC20ConfigProps> = ({
           onClick={() => togglePanel("accessControl")}
         >
           <div className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-purple-500" />
             <CardTitle className="text-md">
               Access Control & Ownership
             </CardTitle>
           </div>
+          {panels.accessControl ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
         </CardHeader>
 
         {panels.accessControl && (
