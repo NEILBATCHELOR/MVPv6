@@ -12,47 +12,50 @@ export type Database = {
       audit_logs: {
         Row: {
           action: string
-          details: string
+          details: string | null
           entity_id: string | null
           entity_type: string | null
           id: string
+          new_data: Json | null
           old_data: Json | null
           signature: string | null
-          status: string
+          status: string | null
           timestamp: string
           user_email: string | null
           user_id: string | null
-          username: string
+          username: string | null
           verified: boolean | null
         }
         Insert: {
           action: string
-          details: string
+          details?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
+          new_data?: Json | null
           old_data?: Json | null
           signature?: string | null
-          status: string
+          status?: string | null
           timestamp?: string
           user_email?: string | null
           user_id?: string | null
-          username: string
+          username?: string | null
           verified?: boolean | null
         }
         Update: {
           action?: string
-          details?: string
+          details?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
+          new_data?: Json | null
           old_data?: Json | null
           signature?: string | null
-          status?: string
+          status?: string | null
           timestamp?: string
           user_email?: string | null
           user_id?: string | null
-          username?: string
+          username?: string | null
           verified?: boolean | null
         }
         Relationships: []
@@ -498,218 +501,109 @@ export type Database = {
           },
         ]
       }
-      multisig_confirmations: {
+      multi_sig_confirmations: {
         Row: {
-          confirmed: boolean | null
           created_at: string | null
           id: string
-          signature: string | null
-          signer: string
-          timestamp: string | null
+          owner: string
+          signature: string
           transaction_id: string | null
-          updated_at: string | null
         }
         Insert: {
-          confirmed?: boolean | null
           created_at?: string | null
           id?: string
-          signature?: string | null
-          signer: string
-          timestamp?: string | null
+          owner: string
+          signature: string
           transaction_id?: string | null
-          updated_at?: string | null
         }
         Update: {
-          confirmed?: boolean | null
           created_at?: string | null
           id?: string
-          signature?: string | null
-          signer?: string
-          timestamp?: string | null
+          owner?: string
+          signature?: string
           transaction_id?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "multisig_confirmations_transaction_id_fkey"
+            foreignKeyName: "multi_sig_confirmations_transaction_id_fkey"
             columns: ["transaction_id"]
             isOneToOne: false
-            referencedRelation: "multisig_transactions"
+            referencedRelation: "multi_sig_transactions"
             referencedColumns: ["id"]
           },
         ]
       }
-      multisig_proposals: {
+      multi_sig_transactions: {
         Row: {
-          amount: string
+          blockchain: string
+          blockchain_specific_data: Json | null
+          confirmations: number
           created_at: string | null
-          data: string | null
-          executed_at: string | null
+          data: string
+          destination_wallet_address: string
+          executed: boolean
+          hash: string
           id: string
-          status: string
-          to_address: string
-          token: string
-          updated_at: string | null
-          wallet_id: string
-        }
-        Insert: {
-          amount: string
-          created_at?: string | null
-          data?: string | null
-          executed_at?: string | null
-          id?: string
-          status?: string
-          to_address: string
-          token: string
-          updated_at?: string | null
-          wallet_id: string
-        }
-        Update: {
-          amount?: string
-          created_at?: string | null
-          data?: string | null
-          executed_at?: string | null
-          id?: string
-          status?: string
-          to_address?: string
-          token?: string
-          updated_at?: string | null
-          wallet_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "multisig_proposals_wallet_id_fkey"
-            columns: ["wallet_id"]
-            isOneToOne: false
-            referencedRelation: "multisig_wallets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      multisig_signatures: {
-        Row: {
-          created_at: string | null
-          id: string
-          proposal_id: string
-          signature: string
-          signer_address: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          proposal_id: string
-          signature: string
-          signer_address: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          proposal_id?: string
-          signature?: string
-          signer_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "multisig_signatures_proposal_id_fkey"
-            columns: ["proposal_id"]
-            isOneToOne: false
-            referencedRelation: "multisig_proposals"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      multisig_transactions: {
-        Row: {
-          block_number: number | null
-          chain_id: number | null
-          confirmations: number | null
-          created_at: string | null
-          created_by: string | null
-          data: string | null
-          description: string | null
-          executed: boolean | null
-          from_address: string
-          gas_limit: string | null
-          gas_price: string | null
-          hash: string | null
-          id: string
-          nonce: number | null
-          required: number | null
-          status: string | null
-          timestamp: string | null
-          to_address: string
-          tx_hash: string | null
+          nonce: number
+          token_address: string | null
+          token_symbol: string | null
           updated_at: string | null
           value: string
           wallet_id: string | null
         }
         Insert: {
-          block_number?: number | null
-          chain_id?: number | null
-          confirmations?: number | null
+          blockchain: string
+          blockchain_specific_data?: Json | null
+          confirmations?: number
           created_at?: string | null
-          created_by?: string | null
-          data?: string | null
-          description?: string | null
-          executed?: boolean | null
-          from_address: string
-          gas_limit?: string | null
-          gas_price?: string | null
-          hash?: string | null
+          data?: string
+          destination_wallet_address: string
+          executed?: boolean
+          hash: string
           id?: string
-          nonce?: number | null
-          required?: number | null
-          status?: string | null
-          timestamp?: string | null
-          to_address: string
-          tx_hash?: string | null
+          nonce: number
+          token_address?: string | null
+          token_symbol?: string | null
           updated_at?: string | null
           value: string
           wallet_id?: string | null
         }
         Update: {
-          block_number?: number | null
-          chain_id?: number | null
-          confirmations?: number | null
+          blockchain?: string
+          blockchain_specific_data?: Json | null
+          confirmations?: number
           created_at?: string | null
-          created_by?: string | null
-          data?: string | null
-          description?: string | null
-          executed?: boolean | null
-          from_address?: string
-          gas_limit?: string | null
-          gas_price?: string | null
-          hash?: string | null
+          data?: string
+          destination_wallet_address?: string
+          executed?: boolean
+          hash?: string
           id?: string
-          nonce?: number | null
-          required?: number | null
-          status?: string | null
-          timestamp?: string | null
-          to_address?: string
-          tx_hash?: string | null
+          nonce?: number
+          token_address?: string | null
+          token_symbol?: string | null
           updated_at?: string | null
           value?: string
           wallet_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "multisig_transactions_wallet_id_fkey"
+            foreignKeyName: "multi_sig_transactions_wallet_id_fkey"
             columns: ["wallet_id"]
             isOneToOne: false
-            referencedRelation: "multisig_wallets"
+            referencedRelation: "multi_sig_wallets"
             referencedColumns: ["id"]
           },
         ]
       }
-      multisig_wallets: {
+      multi_sig_wallets: {
         Row: {
           address: string
           blockchain: string
           created_at: string | null
+          created_by: string | null
           id: string
           name: string
-          owner_id: string
-          signers: string[]
+          owners: string[]
           threshold: number
           updated_at: string | null
         }
@@ -717,10 +611,10 @@ export type Database = {
           address: string
           blockchain: string
           created_at?: string | null
+          created_by?: string | null
           id?: string
           name: string
-          owner_id: string
-          signers: string[]
+          owners: string[]
           threshold: number
           updated_at?: string | null
         }
@@ -728,10 +622,10 @@ export type Database = {
           address?: string
           blockchain?: string
           created_at?: string | null
+          created_by?: string | null
           id?: string
           name?: string
-          owner_id?: string
-          signers?: string[]
+          owners?: string[]
           threshold?: number
           updated_at?: string | null
         }
@@ -1726,6 +1620,13 @@ export type Database = {
       create_transaction_events_table: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      validate_blockchain_address: {
+        Args: {
+          blockchain: string
+          address: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
