@@ -441,7 +441,6 @@ const TokenBuilder: React.FC<TokenBuilderProps> = ({
           </Button>
         </div>
       </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="tokens" className="flex items-center gap-2">
@@ -671,56 +670,7 @@ const TokenBuilder: React.FC<TokenBuilderProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {PRODUCT_CATEGORIES.find(
                       (c) => c.name === selectedCategory,
-                    )?.products.map((product) => (
-                      <Card
-                        key={product}
-                        className="cursor-pointer hover:border-primary transition-colors"
-                        onClick={() => {
-                          setSelectedProduct(product);
-                          setTokenForm((prev) => ({
-                            ...prev,
-                            metadata: {
-                              ...prev.metadata,
-                              category: selectedCategory,
-                              product: product,
-                            },
-                          }));
-                          setActiveTab("builder");
-                        }}
-                      >
-                        <CardHeader>
-                          <div className="flex justify-between items-start">
-                            <CardTitle className="text-lg">{product}</CardTitle>
-                            <Coins className="h-8 w-8 text-gray-400" />
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground">
-                              Configure your token properties
-                            </p>
-                            <Button
-                              variant="outline"
-                              className="w-full mt-2"
-                              onClick={() => {
-                                setSelectedProduct(product);
-                                setTokenForm((prev) => ({
-                                  ...prev,
-                                  metadata: {
-                                    ...prev.metadata,
-                                    category: selectedCategory,
-                                    product: product,
-                                  },
-                                }));
-                                setActiveTab("builder");
-                              }}
-                            >
-                              Start Building
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                    )?.products.map((product) => <></>)}
                   </div>
                 </div>
               )}
