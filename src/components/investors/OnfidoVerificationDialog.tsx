@@ -117,6 +117,15 @@ const OnfidoVerificationDialog = ({
 
       setStep("complete");
 
+      // In a real implementation, you would update the investor's KYC status in Supabase
+      // Example:
+      // const { authService } = await import("@/lib/services/authService");
+      // await authService.updateInvestorKYCStatus(
+      //   investor.id || investor.investor_id,
+      //   "approved",
+      //   verificationDetails
+      // );
+
       // Wait a moment before closing
       setTimeout(() => {
         onComplete(

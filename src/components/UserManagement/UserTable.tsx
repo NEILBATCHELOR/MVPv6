@@ -34,6 +34,11 @@ import {
   SortAsc,
   SortDesc,
   Shield,
+  Edit,
+  Key,
+  UserX,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -45,7 +50,12 @@ import {
 } from "../ui/dropdown-menu";
 import BulkActionMenu from "./BulkActionMenu";
 import AddUserModal from "./AddUserModal";
-import { getUsers } from "@/lib/users";
+import {
+  getUsers,
+  deleteUser,
+  changeUserStatus,
+  resetUserPassword,
+} from "@/lib/users";
 import { User } from "@/types/users";
 import { useToast } from "../ui/use-toast";
 import UserMFAControls from "./UserMFAControls";
@@ -81,11 +91,19 @@ const UserTable = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editUser, setEditUser] = useState<User | null>(null);
   const [confirmAction, setConfirmAction] = useState<{
     type: string;
     userId: string;
+    userName?: string;
   } | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [processingAction, setProcessingAction] = useState<string | null>(null);
+  const [resetPasswordUser, setResetPasswordUser] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -168,6 +186,7 @@ const UserTable = ({
     // Refresh the user list after a new user is created
     fetchUsers();
     setShowAddModal(false);
+    setEditUser(null);
   };
 
   const handleToggleMFA = async (userId: string, enabled: boolean) => {
@@ -206,6 +225,94 @@ const UserTable = ({
         variant: "destructive",
       });
     }
+  };
+
+  const handleEditUser = (user: User) => {
+    setEditUser(user);
+    setShowAddModal(true);
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    setProcessingAction(userId);
+    try {
+      await deleteUser(userId);
+      toast({
+        title: "Success",
+        description: "User has been deleted successfully",
+      });
+      fetchUsers(); // Refresh the user list
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingAction(null);
+      setConfirmAction(null);
+    }
+  };
+
+  const handleChangeUserStatus = async (
+    userId: string,
+    status: "active" | "suspended" | "revoked",
+  ) => {
+    setProcessingAction(userId);
+    try {
+      await changeUserStatus(userId, status);
+      toast({
+        title: "Success",
+        description: `User status has been changed to ${status}`,
+      });
+      fetchUsers(); // Refresh the user list
+    } catch (error) {
+      console.error("Failed to change user status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to change user status",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingAction(null);
+      setConfirmAction(null);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordUser || !newPassword) return;
+
+    setProcessingAction(resetPasswordUser.id);
+    try {
+      await resetUserPassword(resetPasswordUser.id, newPassword);
+      toast({
+        title: "Success",
+        description: `Password has been reset for ${resetPasswordUser.name}`,
+      });
+      setResetPasswordUser(null);
+      setNewPassword("");
+    } catch (error) {
+      console.error("Failed to reset password:", error);
+      toast({
+        title: "Error",
+        description: "Failed to reset password",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingAction(null);
+    }
+  };
+
+  const generateRandomPassword = () => {
+    const length = 12;
+    const charset =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    let newPassword = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      newPassword += charset[randomIndex];
+    }
+    setNewPassword(newPassword);
   };
 
   const getStatusBadgeColor = (status: string) => {
@@ -268,7 +375,12 @@ const UserTable = ({
           {selectedUsers.length > 0 && (
             <BulkActionMenu selectedCount={selectedUsers.length} />
           )}
-          <Button onClick={() => setShowAddModal(true)}>
+          <Button
+            onClick={() => {
+              setEditUser(null);
+              setShowAddModal(true);
+            }}
+          >
             <Plus className="w-4 h-4 mr-2" /> Add User
           </Button>
         </div>
@@ -378,40 +490,99 @@ const UserTable = ({
                     />
                   </TableCell>
                   <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => onUserAction("edit", user.id || "")}
-                        >
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            onUserAction("security", user.id || "")
-                          }
-                        >
-                          <Shield className="mr-2 h-4 w-4" />
-                          Security Settings
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() =>
-                            setConfirmAction({
-                              type: "revoke",
-                              userId: user.id || "",
-                            })
-                          }
-                          className="text-red-600"
-                        >
-                          Revoke Access
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {processingAction === user.id ? (
+                      <Button variant="ghost" size="icon" disabled>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      </Button>
+                    ) : (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setResetPasswordUser({
+                                id: user.id || "",
+                                name: user.name,
+                              })
+                            }
+                          >
+                            <Key className="mr-2 h-4 w-4" />
+                            Reset Password
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              onUserAction("security", user.id || "")
+                            }
+                          >
+                            <Shield className="mr-2 h-4 w-4" />
+                            Security Settings
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {user.status === "active" ? (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setConfirmAction({
+                                  type: "suspend",
+                                  userId: user.id || "",
+                                  userName: user.name,
+                                })
+                              }
+                              className="text-amber-600"
+                            >
+                              Suspend Access
+                            </DropdownMenuItem>
+                          ) : user.status === "suspended" ? (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                setConfirmAction({
+                                  type: "activate",
+                                  userId: user.id || "",
+                                  userName: user.name,
+                                })
+                              }
+                              className="text-green-600"
+                            >
+                              Activate User
+                            </DropdownMenuItem>
+                          ) : null}
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setConfirmAction({
+                                type: "revoke",
+                                userId: user.id || "",
+                                userName: user.name,
+                              })
+                            }
+                            className="text-red-600"
+                          >
+                            <UserX className="mr-2 h-4 w-4" />
+                            Revoke Access
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setConfirmAction({
+                                type: "delete",
+                                userId: user.id || "",
+                                userName: user.name,
+                              })
+                            }
+                            className="text-red-600"
+                          >
+                            Delete User
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
@@ -446,6 +617,7 @@ const UserTable = ({
         </div>
       </div>
 
+      {/* Confirmation Dialog for various actions */}
       <AlertDialog
         open={!!confirmAction}
         onOpenChange={() => setConfirmAction(null)}
@@ -454,9 +626,15 @@ const UserTable = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Action</AlertDialogTitle>
             <AlertDialogDescription>
-              {confirmAction?.type === "revoke"
-                ? "Are you sure you want to revoke access for this user? This action requires multi-signature approval and cannot be easily undone."
-                : "Are you sure you want to proceed with this action?"}
+              {confirmAction?.type === "delete"
+                ? `Are you sure you want to delete user ${confirmAction.userName}? This action cannot be undone.`
+                : confirmAction?.type === "revoke"
+                  ? `Are you sure you want to revoke access for ${confirmAction.userName}? This action requires multi-signature approval and cannot be easily undone.`
+                  : confirmAction?.type === "suspend"
+                    ? `Are you sure you want to suspend access for ${confirmAction.userName}? The user will not be able to log in until reactivated.`
+                    : confirmAction?.type === "activate"
+                      ? `Are you sure you want to reactivate ${confirmAction.userName}? The user will regain access to the system.`
+                      : "Are you sure you want to proceed with this action?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -464,12 +642,98 @@ const UserTable = ({
             <AlertDialogAction
               onClick={() => {
                 if (confirmAction) {
-                  onUserAction(confirmAction.type, confirmAction.userId);
-                  setConfirmAction(null);
+                  if (confirmAction.type === "delete") {
+                    handleDeleteUser(confirmAction.userId);
+                  } else if (confirmAction.type === "revoke") {
+                    handleChangeUserStatus(confirmAction.userId, "revoked");
+                  } else if (confirmAction.type === "suspend") {
+                    handleChangeUserStatus(confirmAction.userId, "suspended");
+                  } else if (confirmAction.type === "activate") {
+                    handleChangeUserStatus(confirmAction.userId, "active");
+                  } else {
+                    onUserAction(confirmAction.type, confirmAction.userId);
+                    setConfirmAction(null);
+                  }
                 }
               }}
             >
-              Continue
+              {processingAction ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Continue"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reset Password Dialog */}
+      <AlertDialog
+        open={!!resetPasswordUser}
+        onOpenChange={() => {
+          setResetPasswordUser(null);
+          setNewPassword("");
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset User Password</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter a new password for {resetPasswordUser?.name}. This will
+              immediately invalidate their current password.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <div className="flex">
+                <Input
+                  id="new-password"
+                  type="text"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="ml-2"
+                  onClick={generateRandomPassword}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500">
+                Password should be at least 8 characters long and include a mix
+                of letters, numbers, and special characters.
+              </p>
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleResetPassword}
+              disabled={
+                !newPassword ||
+                newPassword.length < 8 ||
+                processingAction !== null
+              }
+            >
+              {processingAction ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting...
+                </>
+              ) : (
+                "Reset Password"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -477,8 +741,12 @@ const UserTable = ({
 
       <AddUserModal
         open={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditUser(null);
+        }}
         onSubmit={handleUserCreated}
+        editUser={editUser}
       />
     </div>
   );

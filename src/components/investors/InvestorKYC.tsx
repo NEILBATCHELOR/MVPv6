@@ -162,12 +162,35 @@ const InvestorKYC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Proceed to next step (wallet setup)
-      navigate("/investor/wallet-setup");
+      try {
+        // In a real implementation, you would update the investor's KYC information
+        // Example:
+        // const { authService } = await import("@/lib/services/authService");
+        // await authService.updateInvestorKYCStatus(
+        //   investorId,
+        //   "pending",
+        //   {
+        //     sourceOfWealth,
+        //     sourceOfWealthDescription,
+        //     documents: documents.map(doc => ({ id: doc.id, status: doc.status }))
+        //   }
+        // );
+
+        // Proceed to next step (wallet setup)
+        navigate("/investor/wallet-setup");
+      } catch (error) {
+        console.error("Error updating KYC information:", error);
+        toast({
+          title: "Error",
+          description:
+            "There was a problem updating your KYC information. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 

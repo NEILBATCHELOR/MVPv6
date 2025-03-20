@@ -98,12 +98,47 @@ const InvestorRegistration = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Proceed to next step
-      navigate("/investor/verification");
+      try {
+        // In a real implementation, you would register the investor with Supabase
+        // Example:
+        // const { authService } = await import("@/lib/services/authService");
+        //
+        // // 1. Register auth user
+        // const { user } = await authService.registerUser({
+        //   email: formData.email,
+        //   password: formData.password,
+        //   name: formData.fullName,
+        //   role: "investor",
+        //   metadata: {
+        //     country: formData.country,
+        //     investorType: formData.investorType
+        //   }
+        // });
+        //
+        // // 2. Create investor record
+        // const investor = await authService.registerInvestor({
+        //   name: formData.fullName,
+        //   email: formData.email,
+        //   type: formData.investorType,
+        //   country: formData.country
+        // });
+        //
+        // // 3. Link user to investor
+        // await authService.linkUserToInvestor(user.id, investor.investor_id);
+
+        // Proceed to next step
+        navigate("/investor/verification");
+      } catch (error) {
+        console.error("Error registering investor:", error);
+        setErrors({
+          ...errors,
+          form: "An error occurred during registration. Please try again.",
+        });
+      }
     }
   };
 

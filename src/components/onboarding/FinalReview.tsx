@@ -128,7 +128,7 @@ const FinalReview = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!confirmAccuracy) {
@@ -141,12 +141,35 @@ const FinalReview = () => {
     setSubmitting(true);
     setError(null);
 
-    // Mock submission process
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      // In a real implementation, you would get the onboarding data from context
+      // and register the user with Supabase
+      // Example:
+      // const { onboardingData } = useOnboardingContext();
+      // await authService.registerUser({
+      //   email: onboardingData.email,
+      //   password: onboardingData.password,
+      //   name: onboardingData.organizationName,
+      //   role: "issuer",
+      //   metadata: {
+      //     country: onboardingData.country,
+      //     organizationType: onboardingData.businessType
+      //   }
+      // });
+
+      // For now, we'll simulate the process
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // Redirect to dashboard or confirmation page
       navigate("/dashboard");
-    }, 2000);
+    } catch (error) {
+      console.error("Error submitting onboarding data:", error);
+      setError(
+        "An error occurred while submitting your information. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

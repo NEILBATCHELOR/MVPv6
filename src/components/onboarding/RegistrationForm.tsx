@@ -82,12 +82,30 @@ const RegistrationForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Proceed to next step
-      navigate("/onboarding/organization");
+      try {
+        // In a real implementation, you would store the form data in context
+        // Example:
+        // const { updateOnboardingData } = useOnboardingContext();
+        // updateOnboardingData({
+        //   organizationName: formData.organizationName,
+        //   email: formData.email,
+        //   password: formData.password,
+        //   country: formData.country
+        // });
+
+        // Proceed to next step
+        navigate("/onboarding/organization");
+      } catch (error) {
+        console.error("Error saving registration data:", error);
+        setErrors({
+          ...errors,
+          form: "An error occurred. Please try again.",
+        });
+      }
     }
   };
 

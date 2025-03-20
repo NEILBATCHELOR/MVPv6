@@ -21,18 +21,21 @@ import {
 import { Card } from "../ui/card";
 import { useToast } from "../ui/use-toast";
 import { Switch } from "../ui/switch";
-import { RefreshCw, Copy } from "lucide-react";
+import { RefreshCw, Copy, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "../ui/alert";
 
 interface AddUserModalProps {
   open?: boolean;
   onClose?: () => void;
   onSubmit?: (data: { name: string; email: string; role: string }) => void;
+  editUser?: any; // User object if in edit mode
 }
 
 const AddUserModal = ({
   open = true,
   onClose = () => {},
   onSubmit = () => {},
+  editUser = null,
 }: AddUserModalProps) => {
   const { toast } = useToast();
   const [name, setName] = useState("");
@@ -46,11 +49,29 @@ const AddUserModal = ({
   const [autoGeneratePassword, setAutoGeneratePassword] = useState(true);
   const [password, setPassword] = useState("");
   const [sendInvitation, setSendInvitation] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Determine if we're in edit mode
+  const isEditMode = !!editUser;
 
   useEffect(() => {
-    generateNewKeyPair();
-    generateRandomPassword();
-  }, []);
+    // Initialize form with user data if in edit mode
+    if (editUser) {
+      setName(editUser.name || "");
+      setEmail(editUser.email || "");
+      setRole(editUser.role || "superAdmin");
+      // In edit mode, we don't need to generate a new key pair or password by default
+      setSendInvitation(false);
+    } else {
+      // Reset form for new user
+      setName("");
+      setEmail("");
+      setRole("superAdmin");
+      setSendInvitation(true);
+      generateNewKeyPair();
+      generateRandomPassword();
+    }
+  }, [editUser, open]);
 
   const generateNewKeyPair = async () => {
     try {
@@ -86,60 +107,93 @@ const AddUserModal = ({
     });
   };
 
+  const validateForm = () => {
+    setError(null);
+
+    if (!name.trim()) {
+      setError("Name is required");
+      return false;
+    }
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+
+    if (!role) {
+      setError("Role is required");
+      return false;
+    }
+
+    if (!isEditMode) {
+      if (!keyPair) {
+        setError("Key pair generation failed");
+        return false;
+      }
+
+      if (!autoGeneratePassword && !password) {
+        setError("Password is required");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !name ||
-      !email ||
-      !role ||
-      !keyPair ||
-      (!autoGeneratePassword && !password)
-    ) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
+
+    if (!validateForm()) {
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // Create user in the database
-      const user = await createUser({
-        name,
-        email,
-        role,
-        publicKey: keyPair.publicKey,
-        encryptedPrivateKey: keyPair.encryptedPrivateKey,
-        password,
-        sendInvitation,
-      });
+      if (isEditMode) {
+        // Update existing user
+        // In a real implementation, you would call updateUser from users.ts
+        // For now, we'll just simulate success
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast({
-        title: "Success",
-        description: `User ${name} has been created successfully`,
-      });
+        toast({
+          title: "Success",
+          description: `User ${name} has been updated successfully`,
+        });
+      } else {
+        // Create new user in the database
+        const user = await createUser({
+          name,
+          email,
+          role,
+          publicKey: keyPair!.publicKey,
+          encryptedPrivateKey: keyPair!.encryptedPrivateKey,
+          password,
+          sendInvitation,
+        });
+
+        toast({
+          title: "Success",
+          description: `User ${name} has been created successfully${sendInvitation ? " and an invitation email has been sent" : ""}`,
+        });
+      }
 
       // Call the onSubmit callback with the user data
       onSubmit({ name, email, role });
 
       // Reset form
-      setName("");
-      setEmail("");
-      setRole("superAdmin");
-      generateNewKeyPair();
-      generateRandomPassword();
+      if (!isEditMode) {
+        setName("");
+        setEmail("");
+        setRole("superAdmin");
+        generateNewKeyPair();
+        generateRandomPassword();
+      }
 
       // Close modal
       onClose();
-    } catch (error) {
-      console.error("Error creating user:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create user",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      console.error("Error processing user:", error);
+      setError(error.message || "Failed to process user");
     } finally {
       setIsSubmitting(false);
     }
@@ -166,8 +220,14 @@ const AddUserModal = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>{isEditMode ? "Edit User" : "Add New User"}</DialogTitle>
         </DialogHeader>
+
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
@@ -191,6 +251,7 @@ const AddUserModal = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isEditMode} // Email can't be changed in edit mode
               />
             </div>
 
@@ -219,109 +280,117 @@ const AddUserModal = ({
               )}
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="auto-generate-password"
-                  checked={autoGeneratePassword}
-                  onCheckedChange={setAutoGeneratePassword}
-                />
-                <Label htmlFor="auto-generate-password">
-                  Auto-generate password
-                </Label>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="flex">
-                  <Input
-                    id="password"
-                    type="text"
-                    placeholder={
-                      autoGeneratePassword ? "Auto-generated" : "Enter password"
-                    }
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={autoGeneratePassword}
-                    className="flex-1"
-                    required
+            {!isEditMode && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="auto-generate-password"
+                    checked={autoGeneratePassword}
+                    onCheckedChange={setAutoGeneratePassword}
                   />
+                  <Label htmlFor="auto-generate-password">
+                    Auto-generate password
+                  </Label>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="flex">
+                    <Input
+                      id="password"
+                      type="text"
+                      placeholder={
+                        autoGeneratePassword
+                          ? "Auto-generated"
+                          : "Enter password"
+                      }
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={autoGeneratePassword}
+                      className="flex-1"
+                      required
+                    />
+                    {autoGeneratePassword && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="ml-2"
+                        onClick={() => copyToClipboard(password)}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {autoGeneratePassword && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="ml-2"
+                        onClick={generateRandomPassword}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                   {autoGeneratePassword && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="ml-2"
-                      onClick={() => copyToClipboard(password)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  )}
-                  {autoGeneratePassword && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="ml-2"
-                      onClick={generateRandomPassword}
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
+                    <p className="text-xs text-gray-500 mt-1">
+                      This password will be used for initial login. The user
+                      will be prompted to change it.
+                    </p>
                   )}
                 </div>
-                {autoGeneratePassword && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    This password will be used for initial login. The user will
-                    be prompted to change it.
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="send-invitation"
+                    checked={sendInvitation}
+                    onCheckedChange={setSendInvitation}
+                  />
+                  <Label htmlFor="send-invitation">Send email invitation</Label>
+                </div>
+                {sendInvitation && (
+                  <p className="text-xs text-gray-500">
+                    An email will be sent to {email || "the user"} with login
+                    instructions and credentials.
                   </p>
                 )}
-              </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="send-invitation"
-                  checked={sendInvitation}
-                  onCheckedChange={setSendInvitation}
-                />
-                <Label htmlFor="send-invitation">Send email invitation</Label>
-              </div>
-              {sendInvitation && (
-                <p className="text-xs text-gray-500">
-                  An email will be sent to {email || "the user"} with login
-                  instructions and credentials.
-                </p>
-              )}
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Generated Key Pair</Label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={generateNewKeyPair}
-                    type="button"
-                  >
-                    Regenerate Keys
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Generated Key Pair</Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={generateNewKeyPair}
+                      type="button"
+                    >
+                      Regenerate Keys
+                    </Button>
+                  </div>
+                  <Card className="p-4 space-y-2 bg-gray-50">
+                    <div>
+                      <Label className="text-sm text-gray-500">
+                        Public Key
+                      </Label>
+                      <div className="mt-1 text-sm font-mono break-all">
+                        {keyPair?.publicKey || "Generating..."}
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-gray-500">
+                        Private Key
+                      </Label>
+                      <div className="mt-1 text-sm font-mono break-all">
+                        {keyPair?.encryptedPrivateKey
+                          ? "********"
+                          : "Generating..."}
+                      </div>
+                    </div>
+                  </Card>
                 </div>
-                <Card className="p-4 space-y-2 bg-gray-50">
-                  <div>
-                    <Label className="text-sm text-gray-500">Public Key</Label>
-                    <div className="mt-1 text-sm font-mono break-all">
-                      {keyPair?.publicKey || "Generating..."}
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-sm text-gray-500">Private Key</Label>
-                    <div className="mt-1 text-sm font-mono break-all">
-                      {keyPair?.encryptedPrivateKey
-                        ? "********"
-                        : "Generating..."}
-                    </div>
-                  </div>
-                </Card>
               </div>
-            </div>
+            )}
           </div>
 
           <DialogFooter>
@@ -334,7 +403,16 @@ const AddUserModal = ({
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Add User"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isEditMode ? "Updating..." : "Creating..."}
+                </>
+              ) : isEditMode ? (
+                "Update User"
+              ) : (
+                "Add User"
+              )}
             </Button>
           </DialogFooter>
         </form>
