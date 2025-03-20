@@ -69,6 +69,8 @@ import {
   ERC4626Config,
 } from "./standards";
 
+import TokenTemplateBuilder from "./TokenTemplateBuilder";
+
 import {
   TOKEN_STANDARDS,
   PRODUCT_CATEGORIES,
@@ -604,78 +606,14 @@ const TokenBuilder: React.FC<TokenBuilderProps> = ({
 
         {/* Templates Tab */}
         <TabsContent value="templates" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Token Templates</CardTitle>
-              <CardDescription>
-                Choose a template for your token or create a custom one
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!selectedCategory ? (
-                // Step 1: Select Product Category
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">
-                    Select Product Category
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {PRODUCT_CATEGORIES.map((category) => (
-                      <Card
-                        key={category.name}
-                        className="cursor-pointer hover:border-primary transition-colors"
-                        onClick={() => handleSelectCategory(category.name)}
-                      >
-                        <CardHeader>
-                          <CardTitle className="text-lg">
-                            {category.name}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground">
-                              Available Products:
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {category.products.slice(0, 3).map((product) => (
-                                <Badge key={product} variant="secondary">
-                                  {product}
-                                </Badge>
-                              ))}
-                              {category.products.length > 3 && (
-                                <Badge variant="secondary">+more</Badge>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                // Step 2: Select Product Type and go directly to builder
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedCategory("")}
-                    >
-                      <ArrowLeft className="h-4 w-4 mr-1" />
-                      Back
-                    </Button>
-                    <h3 className="text-lg font-medium">
-                      Select Product Type for {selectedCategory}
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {PRODUCT_CATEGORIES.find(
-                      (c) => c.name === selectedCategory,
-                    )?.products.map((product) => <></>)}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <TokenTemplateBuilder
+            tokenForm={tokenForm}
+            handleInputChange={handleInputChange}
+            setTokenForm={setTokenForm}
+            onSave={() => {
+              setActiveTab("builder");
+            }}
+          />
         </TabsContent>
 
         {/* Builder Tab */}

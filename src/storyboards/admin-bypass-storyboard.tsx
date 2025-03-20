@@ -1,7 +1,18 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import WelcomeScreen from "@/components/onboarding/WelcomeScreen";
+import { Button } from "@/components/ui/button";
+import { Coins } from "lucide-react";
 
 export default function AdminBypassStoryboard() {
+  const navigate = useNavigate();
+
+  const handleTokenBuilderClick = () => {
+    // Set admin bypass in localStorage before navigating
+    localStorage.setItem("adminBypass", "true");
+    navigate("/token-builder");
+  };
+
   return (
     <div className="w-full h-full">
       <WelcomeScreen />
