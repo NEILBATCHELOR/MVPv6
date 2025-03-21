@@ -41,6 +41,14 @@ interface OnboardingContextType {
   state: OnboardingState;
   updateState: (updates: Partial<OnboardingState>) => void;
   resetState: () => void;
+
+  // Additional properties for document management
+  entityId: string | null;
+  setEntityId: (id: string | null) => void;
+  entityType: "issuer" | "investor";
+  setEntityType: (type: "issuer" | "investor") => void;
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
 }
 
 const initialState: OnboardingState = {
@@ -90,6 +98,9 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(
 
 export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
   const [state, setState] = useState<OnboardingState>(initialState);
+  const [entityId, setEntityId] = useState<string | null>(null);
+  const [entityType, setEntityType] = useState<"issuer" | "investor">("issuer");
+  const [currentStep, setCurrentStep] = useState(1);
 
   const updateState = (updates: Partial<OnboardingState>) => {
     setState((prevState) => ({ ...prevState, ...updates }));
@@ -100,7 +111,19 @@ export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <OnboardingContext.Provider value={{ state, updateState, resetState }}>
+    <OnboardingContext.Provider
+      value={{
+        state,
+        updateState,
+        resetState,
+        entityId,
+        setEntityId,
+        entityType,
+        setEntityType,
+        currentStep,
+        setCurrentStep,
+      }}
+    >
       {children}
     </OnboardingContext.Provider>
   );

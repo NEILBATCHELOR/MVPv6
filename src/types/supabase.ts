@@ -253,55 +253,43 @@ export type Database = {
       }
       documents: {
         Row: {
-          created_at: string
-          date_updated: string
-          description: string | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
           file_path: string | null
-          file_size: number | null
-          file_type: string | null
           file_url: string | null
           id: string
+          metadata: Json | null
           name: string
-          organization_id: string
-          rejection_reason: string | null
-          required: boolean | null
           status: string
-          updated_at: string
-          user_id: string
+          type: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          date_updated?: string
-          description?: string | null
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
           file_path?: string | null
-          file_size?: number | null
-          file_type?: string | null
           file_url?: string | null
           id?: string
+          metadata?: Json | null
           name: string
-          organization_id: string
-          rejection_reason?: string | null
-          required?: boolean | null
-          status: string
-          updated_at?: string
-          user_id: string
+          status?: string
+          type: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          date_updated?: string
-          description?: string | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
           file_path?: string | null
-          file_size?: number | null
-          file_type?: string | null
           file_url?: string | null
           id?: string
+          metadata?: Json | null
           name?: string
-          organization_id?: string
-          rejection_reason?: string | null
-          required?: boolean | null
           status?: string
-          updated_at?: string
-          user_id?: string
+          type?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1336,6 +1324,39 @@ export type Database = {
           id?: string
           request_id?: string
           timestamp?: string
+        }
+        Relationships: []
+      }
+      user_mfa_settings: {
+        Row: {
+          backup_codes: Json | null
+          created_at: string | null
+          enabled: boolean
+          id: string
+          secret: string | null
+          updated_at: string | null
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          backup_codes?: Json | null
+          created_at?: string | null
+          enabled?: boolean
+          id?: string
+          secret?: string | null
+          updated_at?: string | null
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          backup_codes?: Json | null
+          created_at?: string | null
+          enabled?: boolean
+          id?: string
+          secret?: string | null
+          updated_at?: string | null
+          user_id?: string
+          verified?: boolean
         }
         Relationships: []
       }
