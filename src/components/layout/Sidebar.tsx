@@ -142,6 +142,11 @@ const Sidebar = () => {
         </h3>
         <div className="space-y-1">
           <SidebarItem
+            icon={<Plus className="h-4 w-4" />}
+            label="New Wallet"
+            href="/wallet/new"
+          />
+          <SidebarItem
             icon={<LayoutDashboard className="h-4 w-4" />}
             label="Wallet Dashboard"
             href="/wallet/dashboard"
@@ -150,11 +155,6 @@ const Sidebar = () => {
             icon={<Wallet className="h-4 w-4" />}
             label="Multi-Sig Wallet"
             href="/wallet/multisig"
-          />
-          <SidebarItem
-            icon={<Plus className="h-4 w-4" />}
-            label="New Wallet"
-            href="/wallet/new"
           />
           <SidebarItem
             icon={<Shield className="h-4 w-4" />}

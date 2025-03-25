@@ -105,7 +105,7 @@ const AddUserModal = ({
 
     setIsSubmitting(true);
     try {
-      // Create user in the database
+      // Create user in the database (both auth.users and public.users)
       const user = await createUser({
         name,
         email,
@@ -118,7 +118,7 @@ const AddUserModal = ({
 
       toast({
         title: "Success",
-        description: `User ${name} has been created successfully`,
+        description: `User ${name} has been created successfully${sendInvitation ? " and an invitation email has been sent" : ""}`,
       });
 
       // Call the onSubmit callback with the user data
@@ -133,11 +133,11 @@ const AddUserModal = ({
 
       // Close modal
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating user:", error);
       toast({
         title: "Error",
-        description: "Failed to create user",
+        description: error.message || "Failed to create user",
         variant: "destructive",
       });
     } finally {

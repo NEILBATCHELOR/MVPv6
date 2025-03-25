@@ -22,6 +22,7 @@ import MultiSigWalletPage from "./pages/wallet/MultiSigWalletPage";
 import KeyManagementPage from "./pages/wallet/KeyManagementPage";
 import TokenManagementPage from "./pages/wallet/TokenManagementPage";
 import MultiSigWalletDashboard from "./components/wallet/MultiSigWalletDashboard";
+import NewWalletPage from "./pages/wallet/NewWalletPage";
 
 // ✅ Import Onboarding Components
 import WelcomeScreen from "@/components/onboarding/WelcomeScreen";
@@ -103,6 +104,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <WalletDashboardPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="wallet/new"
+                  element={
+                    <ProtectedRoute>
+                      <NewWalletPage />
                     </ProtectedRoute>
                   }
                 />
