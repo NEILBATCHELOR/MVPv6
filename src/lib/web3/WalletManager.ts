@@ -646,7 +646,7 @@ export class WalletManager {
 
       // Store transaction in database
       const { data, error } = await supabase
-        .from("transactions")
+        .from("wallet_transactions")
         .insert({
           from_address: transaction.from,
           to_address: transaction.to,
@@ -701,7 +701,7 @@ export class WalletManager {
     try {
       // Get transactions from database
       const { data, error } = await supabase
-        .from("transactions")
+        .from("wallet_transactions")
         .select("*")
         .eq("wallet_id", walletId)
         .order("timestamp", { ascending: false });
@@ -709,7 +709,7 @@ export class WalletManager {
       if (error) throw error;
 
       // Transform data to match our interface
-      return data.map((tx) => ({
+      return data.map((tx: any) => ({
         id: tx.id,
         from: tx.from_address,
         to: tx.to_address,

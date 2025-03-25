@@ -28,7 +28,7 @@ const SubscriptionManager = ({
   onSubscribe = () => {},
   onCancelSubscription = () => {},
   onRenewSubscription = () => {},
-  onUpdatePaymentMethod = () => {},
+  onUpdatePaymentMethod = (data?: any) => {},
 }: SubscriptionManagerProps) => {
   const [activeTab, setActiveTab] = useState(
     currentSubscription ? "details" : "plans",

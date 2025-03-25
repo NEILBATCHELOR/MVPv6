@@ -72,7 +72,12 @@ export const getTransactionHistory = async (
       data?.map((item) => ({
         id: item.id,
         requestId: item.request_id,
-        eventType: item.event_type,
+        eventType: item.event_type as
+          | "status_change"
+          | "approval"
+          | "blockchain_confirmation"
+          | "rejection"
+          | "creation",
         timestamp: item.timestamp,
         data: item.data,
         actor: item.actor,
@@ -118,7 +123,12 @@ export const addTransactionEvent = async (
     return {
       id: data.id,
       requestId: data.request_id,
-      eventType: data.event_type,
+      eventType: data.event_type as
+        | "status_change"
+        | "approval"
+        | "blockchain_confirmation"
+        | "rejection"
+        | "creation",
       timestamp: data.timestamp,
       data: data.data,
       actor: data.actor,
@@ -150,7 +160,12 @@ export const getAllTransactionEvents = async (): Promise<
       data?.map((item) => ({
         id: item.id,
         requestId: item.request_id,
-        eventType: item.event_type,
+        eventType: item.event_type as
+          | "status_change"
+          | "approval"
+          | "blockchain_confirmation"
+          | "rejection"
+          | "creation",
         timestamp: item.timestamp,
         data: item.data,
         actor: item.actor,
@@ -184,7 +199,12 @@ export const getTransactionEventsByType = async (
       data?.map((item) => ({
         id: item.id,
         requestId: item.request_id,
-        eventType: item.event_type,
+        eventType: item.event_type as
+          | "status_change"
+          | "approval"
+          | "blockchain_confirmation"
+          | "rejection"
+          | "creation",
         timestamp: item.timestamp,
         data: item.data,
         actor: item.actor,

@@ -185,11 +185,19 @@ const TokenAdministration: React.FC<TokenAdministrationProps> = ({
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setTokens(data || []);
+      // Add total_supply property if missing
+      const tokensWithSupply = (data || []).map((token) => ({
+        ...token,
+        total_supply: token.total_supply || 0,
+      }));
+      setTokens(tokensWithSupply);
 
       // Select the first token by default if available
       if (data && data.length > 0 && !selectedToken) {
-        setSelectedToken(data[0]);
+        setSelectedToken({
+          ...data[0],
+          total_supply: data[0].total_supply || 0,
+        });
       }
     } catch (err) {
       console.error("Error fetching tokens:", err);

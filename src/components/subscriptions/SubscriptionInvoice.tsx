@@ -83,7 +83,7 @@ const SubscriptionInvoice = ({
   onPrint = () => {},
   invoiceId,
   onPaymentProcessed = () => {},
-  onError = () => {},
+  onError = (message: string) => {},
 }: SubscriptionInvoiceProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -117,9 +117,11 @@ const SubscriptionInvoice = ({
 
       // Mock payment method for demo
       const paymentMethod = {
-        type: "credit_card",
-        last4: "4242",
-        cardType: "Visa",
+        amount: invoice.total,
+        paymentMethod: "credit_card",
+        paymentDate: new Date().toISOString(),
+        transactionId: "tx_" + Math.random().toString(36).substring(2, 15),
+        notes: "Payment processed via credit card ending in 4242",
       };
 
       await processPayment(invoiceId, paymentMethod);

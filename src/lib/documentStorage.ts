@@ -77,7 +77,24 @@ export const uploadDocument = async (
         documentMetadata.filePath = filePath;
 
         // Store metadata in Supabase Database
-        await supabase.from("documents").insert([documentMetadata]).select();
+        await supabase
+          .from("documents")
+          .insert({
+            id: documentMetadata.id,
+            name: documentMetadata.name,
+            status: documentMetadata.status,
+            date_updated: documentMetadata.dateUpdated,
+            description: documentMetadata.description,
+            rejection_reason: documentMetadata.rejectionReason,
+            file_url: documentMetadata.fileUrl,
+            file_path: documentMetadata.filePath,
+            file_type: documentMetadata.fileType,
+            file_size: documentMetadata.fileSize,
+            user_id: userId,
+            organization_id: organizationId,
+            required: documentMetadata.required,
+          })
+          .select();
       }
     } catch (e) {
       console.warn("Using mock document storage", e);
@@ -100,11 +117,26 @@ export const getDocuments = async (
       const { data, error } = await supabase
         .from("documents")
         .select("*")
-        .eq("organizationId", organizationId)
-        .order("dateUpdated", { ascending: false });
+        .eq("organization_id", organizationId)
+        .order("date_updated", { ascending: false });
 
       if (!error && data && data.length > 0) {
-        return data as DocumentMetadata[];
+        // Transform data to match our interface
+        return data.map((doc: any) => ({
+          id: doc.id,
+          name: doc.name,
+          status: doc.status,
+          dateUpdated: doc.date_updated,
+          description: doc.description,
+          rejectionReason: doc.rejection_reason,
+          fileUrl: doc.file_url,
+          filePath: doc.file_path,
+          fileType: doc.file_type,
+          fileSize: doc.file_size,
+          userId: doc.user_id,
+          organizationId: doc.organization_id,
+          required: doc.required,
+        }));
       }
     } catch (e) {
       console.warn("Using mock document storage", e);
@@ -160,15 +192,15 @@ export const deleteDocument = async (documentId: string): Promise<boolean> => {
       // First get the document to get the file path
       const { data: document, error: fetchError } = await supabase
         .from("documents")
-        .select("filePath")
+        .select("file_path")
         .eq("id", documentId)
         .single();
 
       if (fetchError) throw fetchError;
 
       // Remove the file from storage if it exists
-      if (document?.filePath) {
-        await supabase.storage.from("documents").remove([document.filePath]);
+      if (document?.file_path) {
+        await supabase.storage.from("documents").remove([document.file_path]);
       }
 
       // Delete the document record
