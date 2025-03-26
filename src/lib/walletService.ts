@@ -32,7 +32,7 @@ export async function getWalletStatus(
 ): Promise<ApiResponse<WalletStatus>> {
   try {
     const { data, error } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .select("address, status, activated_at, blocked_at, block_reason")
       .eq("address", walletAddress)
       .single();
@@ -61,7 +61,7 @@ export async function activateWallet(
     const now = new Date().toISOString();
 
     const { data, error } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .update({
         status: "active",
         activated_at: now,
@@ -94,7 +94,7 @@ export async function blockWallet(
     const now = new Date().toISOString();
 
     const { data, error } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .update({
         status: "blocked",
         blocked_at: now,

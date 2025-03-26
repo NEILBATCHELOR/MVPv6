@@ -93,7 +93,7 @@ export async function activateWallet(
 ): Promise<ApiResponse<any>> {
   try {
     const { data, error } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .update({
         status: "active",
         activated_at: new Date().toISOString(),
@@ -117,7 +117,7 @@ export async function blockWallet(
 ): Promise<ApiResponse<any>> {
   try {
     const { data, error } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .update({
         status: "blocked",
         block_reason: reason,

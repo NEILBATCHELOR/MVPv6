@@ -121,7 +121,7 @@ export class WalletManager {
 
       // Store wallet in database
       const { data, error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .insert({
           address: newWallet.address,
           type: newWallet.type,
@@ -191,7 +191,7 @@ export class WalletManager {
 
       // Check if wallet already exists
       const { data: existingWallet } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .select("id")
         .eq("address", wallet.address)
         .eq("user_id", this.userId)
@@ -203,7 +203,7 @@ export class WalletManager {
 
       // Store wallet in database
       const { data, error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .insert({
           address: newWallet.address,
           type: newWallet.type,
@@ -286,7 +286,7 @@ export class WalletManager {
 
       // Check if wallet already exists
       const { data: existingWallet } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .select("id")
         .eq("address", contractAddress)
         .eq("user_id", this.userId)
@@ -298,7 +298,7 @@ export class WalletManager {
 
       // Store wallet in database
       const { data, error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .insert({
           address: newWallet.address,
           type: newWallet.type,
@@ -349,7 +349,7 @@ export class WalletManager {
 
       // Get wallets from database
       const { data, error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .select("*")
         .eq("user_id", this.userId)
         .order("created_at", { ascending: false });
@@ -382,7 +382,7 @@ export class WalletManager {
     try {
       // Get wallet from database
       const { data, error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .select("*")
         .eq("id", walletId)
         .single();
@@ -420,7 +420,7 @@ export class WalletManager {
 
       // First, unset default for all user wallets
       const { error: updateError } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .update({ is_default: false })
         .eq("user_id", this.userId);
 
@@ -428,7 +428,7 @@ export class WalletManager {
 
       // Then set default for the specified wallet
       const { error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .update({ is_default: true })
         .eq("id", walletId)
         .eq("user_id", this.userId);
@@ -456,7 +456,7 @@ export class WalletManager {
 
       // Delete wallet from database
       const { error } = await supabase
-        .from("wallets")
+        .from("multi_sig_wallets")
         .delete()
         .eq("id", walletId)
         .eq("user_id", this.userId);
@@ -573,7 +573,7 @@ export class WalletManager {
 
         // Get an EOA wallet to use as signer
         const { data: eoaWallets, error } = await supabase
-          .from("wallets")
+          .from("multi_sig_wallets")
           .select("*")
           .eq("user_id", this.userId)
           .eq("type", WalletType.EOA)
@@ -830,7 +830,7 @@ export class WalletManager {
         // We need a signer to submit the transaction
         // Get an EOA wallet to use as signer
         const { data: eoaWallets, error } = await supabase
-          .from("wallets")
+          .from("multi_sig_wallets")
           .select("*")
           .eq("user_id", this.userId)
           .eq("type", WalletType.EOA)

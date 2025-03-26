@@ -22,6 +22,7 @@ export default defineConfig({
         global: "globalThis",
       },
     },
+    include: ["react", "react/jsx-runtime"],
   },
   build: {
     commonjsOptions: {
@@ -30,23 +31,27 @@ export default defineConfig({
     rollupOptions: {
       plugins: [polyfillNode()],
     },
+    sourcemap: true,
   },
   plugins: [
     react({
       plugins: [...conditionalPlugins],
     }),
     tempo(),
-    polyfillNode(), // ✅ Adds Node.js polyfills, fixing `buffer.Buffer` issue
+    polyfillNode(), // Adds Node.js polyfills, fixing `buffer.Buffer` issue
   ],
   resolve: {
     preserveSymlinks: true,
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      buffer: "buffer", // ✅ Explicitly alias `buffer`
+      buffer: "buffer", // Explicitly alias `buffer`
+      process: "process/browser",
+      util: "util",
     },
   },
   define: {
     "process.env": {},
+    global: {},
   },
   server: {
     // @ts-ignore

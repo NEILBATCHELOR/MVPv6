@@ -148,14 +148,14 @@ export const getWalletData = async (
   try {
     // Try to fetch source wallets
     const { data: sourceData, error: sourceError } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .select("*")
       .eq("organization_id", organizationId)
       .eq("wallet_type", "source");
 
     // Try to fetch issuance wallets
     const { data: issuanceData, error: issuanceError } = await supabase
-      .from("wallets")
+      .from("multi_sig_wallets")
       .select("*")
       .eq("organization_id", organizationId)
       .eq("wallet_type", "issuance");

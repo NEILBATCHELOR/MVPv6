@@ -355,7 +355,7 @@ export class MultiSigWallet {
 
       // Get pending transactions from database
       const { data, error } = await supabase
-        .from("multisig_transactions")
+        .from("multi_sig_transactions")
         .select("*")
         .eq("executed", false)
         .order("created_at", { ascending: false });
@@ -392,7 +392,7 @@ export class MultiSigWallet {
 
       // Get executed transactions from database
       const { data, error } = await supabase
-        .from("multisig_transactions")
+        .from("multi_sig_transactions")
         .select("*")
         .eq("executed", true)
         .order("created_at", { ascending: false });
@@ -431,7 +431,7 @@ export class MultiSigWallet {
 
       // Get transaction from database
       const { data, error } = await supabase
-        .from("multisig_transactions")
+        .from("multi_sig_transactions")
         .select("*")
         .eq("id", transactionId)
         .single();
@@ -469,7 +469,7 @@ export class MultiSigWallet {
 
       // Get confirmations from database
       const { data, error } = await supabase
-        .from("multisig_confirmations")
+        .from("multi_sig_confirmations")
         .select("*")
         .eq("transaction_id", transactionId)
         .order("timestamp", { ascending: false });
@@ -499,7 +499,7 @@ export class MultiSigWallet {
     transaction: MultiSigTransaction,
   ): Promise<void> {
     try {
-      const { error } = await supabase.from("multisig_transactions").insert({
+      const { error } = await supabase.from("multi_sig_transactions").insert({
         id: transaction.id,
         to: transaction.to,
         value: transaction.value,
@@ -524,7 +524,7 @@ export class MultiSigWallet {
   // Store a confirmation in the database
   private async storeConfirmation(confirmation: Confirmation): Promise<void> {
     try {
-      const { error } = await supabase.from("multisig_confirmations").insert({
+      const { error } = await supabase.from("multi_sig_confirmations").insert({
         transaction_id: confirmation.transactionId,
         signer: confirmation.signer,
         signature: confirmation.signature,
@@ -547,7 +547,7 @@ export class MultiSigWallet {
   ): Promise<void> {
     try {
       const { error } = await supabase
-        .from("multisig_confirmations")
+        .from("multi_sig_confirmations")
         .update({
           confirmed,
           timestamp: new Date().toISOString(),
@@ -569,7 +569,7 @@ export class MultiSigWallet {
   ): Promise<void> {
     try {
       const { error } = await supabase
-        .from("multisig_transactions")
+        .from("multi_sig_transactions")
         .update({
           executed,
           updated_at: new Date().toISOString(),
@@ -594,7 +594,7 @@ export class MultiSigWallet {
 
       // Update in database
       const { error } = await supabase
-        .from("multisig_transactions")
+        .from("multi_sig_transactions")
         .update({
           confirmations: confirmationCount.toString(),
           updated_at: new Date().toISOString(),
